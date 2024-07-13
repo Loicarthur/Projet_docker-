@@ -1,0 +1,40 @@
+# ma configuration globale
+global:
+  scrape_interval: 15s # Par défaut, il  interroge les cibles toutes les 15 secondes.
+  evaluation_interval: 15s # Par défaut, interroge les cibles toutes les 15 secondes.
+  # scrape_timeout est défini sur la valeur par défaut globale (10s).
+
+  # Attache ces étiquettes à toutes les séries temporelles ou alertes lors de la communication avec
+  # des systèmes externes .
+  external_labels:
+    monitor: "my-project"
+
+# Il Charge et évalue les règles dans ce fichier tous les 'evaluation_interval' secondes.
+rule_files:
+  - "alert.rules"
+  # - "first.rules"
+  # - "second.rules"
+
+# alerte
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets:
+            - "alertmanager:9093"
+
+
+# Ici, c'est Prometheus lui-même.
+scrape_configs:
+
+
+  - job_name: "ping_exporter"
+
+    # Remplace la valeur par défaut globale et interroge les cibles de ce job toutes les 15 secondes.
+    scrape_interval: 15s
+    metrics_path: /
+    params:
+        target: ['exporter:8085']
+
+    static_configs:
+      - targets: ["exporter:8085"]
